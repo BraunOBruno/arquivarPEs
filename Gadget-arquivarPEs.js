@@ -1,6 +1,7 @@
 // Author: Francisco Venancio ([[Usuário:Chicocvenancio]])
 /* jshint laxbreak: true, esversion: 8 */
 /* global jQuery, mediaWiki */
+// Backlinks correction fork by Little Sunshine
 
 ( function ( $, mw ) {
 	'use strict';
@@ -144,6 +145,7 @@
 	// TODO: make single edit with more than one page
 	ape.archivePage = async function () {
 		const date = new Date();
+		ape.day = date.getDate()
 
 		ape.fullArchivePage = 'Wikipédia:Páginas para eliminar/' + ( ape.result !== 'Redirecionar/' ? ape.result : 'Arquivo de mantidas/' ) + months[ date.getMonth() ] + ' ' + date.getFullYear();
 		ape.useDialog( 'Em progresso', 'Arquivando página', 'nprompt-dialog' );
@@ -151,6 +153,7 @@
 		let page;
 		ape.pages.each( function ( i, pageLink ) {
 			page = pageLink.text;
+			ape.page = page;
 			appendtext += `\n* [[${mw.config.get( 'wgPageName' )}| ${page}]] – [[:${page}]]` + ( ape.result === 'Redirecionar/' ? ' - redirecionado' : '' ) + ( ape.result === 'Inconclusivo/' ? ' - inconclusiva' : '' );
 		} );
 		return await api.post( {
@@ -162,8 +165,8 @@
 			summary: 'arquivando [[' + page + ']]' + withScript,
 			token: mw.user.tokens.get( 'csrfToken' ),
 		} )
-			.done(function () {
-				ape.backlinks(page);
+			.done(function () { 
+				ape.backlinks();
 			})
 			.fail( ape.ajaxErr );
 	};
