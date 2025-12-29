@@ -162,7 +162,9 @@
 			summary: 'arquivando [[' + page + ']]' + withScript,
 			token: mw.user.tokens.get( 'csrfToken' ),
 		} )
-			.done( ape.backlinks )
+			.done(function () {
+				ape.backlinks(page);
+			})
 			.fail( ape.ajaxErr );
 	};
 
